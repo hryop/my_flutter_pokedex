@@ -4,6 +4,8 @@
 
 a flutter app demo to view pokemon info using API from  [Poke API](https://pokeapi.co/)
 
+Click [here](https://drive.google.com/file/d/1-aaWsYcQsZCIxtXA_iE9sKcUnpkU9x5Y/view?usp=sharing) to download the app
+
 ## Features
 1. Scrolling through all available pokemon in Catch menu
 
