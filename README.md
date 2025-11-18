@@ -1,6 +1,6 @@
 # My Flutter Pokedex
 
-<img src="https://github.com/CumiTerbang/my_flutter_pokedex/blob/main/readme_asstes/screenshot_1.png" width="200" height="355,56">
+<img src="https://github.com/CumiTerbang/my_flutter_pokedex/blob/main/readme_assets/screenshot_1.png" width="200" height="355,56">
 
 a flutter app demo to view pokemon info using API from  [Poke API](https://pokeapi.co/)
 
