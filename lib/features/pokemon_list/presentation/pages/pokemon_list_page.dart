@@ -25,8 +25,8 @@ class _PokemonListPage extends State<PokemonListPage> {
     pokemonListNextPageUsecase: sl<PokemonListNextPageUsecase>(),
   );
 
-  PokemonListModel pokemonListModel = PokemonListModel();
   List<PokemonListItemModel> results = [];
+  String nextPage = "";
 
   GlobalKey<ScaffoldState> _key = GlobalKey();
 
@@ -38,6 +38,12 @@ class _PokemonListPage extends State<PokemonListPage> {
   void initState() {
     callPokemonList();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,9 +61,17 @@ class _PokemonListPage extends State<PokemonListPage> {
           bloc: _bloc,
           listener: (BuildContext context, PokemonListState state) {
             if (state is SuccessGetPokemonListFirstPageState) {
-              pokemonListModel = PokemonListModel();
-              pokemonListModel = state.pokemonListModel;
+              PokemonListModel pokemonListModel = state.pokemonListModel;
+              results = pokemonListModel.results ?? [];
+              nextPage = pokemonListModel.next ?? "";
               _refreshController.refreshCompleted(resetFooterState: true);
+            }
+
+            if (state is SuccessGetPokemonListNextPageState) {
+              PokemonListModel pokemonListNextPageModel = state.pokemonListModel;
+              results.addAll(pokemonListNextPageModel.results as Iterable<PokemonListItemModel>);
+              nextPage = pokemonListNextPageModel.next ?? "";
+              _refreshController.loadComplete();
             }
           },
           builder: (BuildContext context, PokemonListState state) {
@@ -72,26 +86,25 @@ class _PokemonListPage extends State<PokemonListPage> {
               );
             }
 
-            if (pokemonListModel.results == null ||
-                pokemonListModel.results!.isEmpty) {
+            if (results.isEmpty) {
               return ReloadWidget.empty(content: "No Data");
             }
 
             return SmartRefresher(
               controller: _refreshController,
               enablePullDown: true,
-              enablePullUp: false,
-              onLoading: null,
+              enablePullUp: true,
               onRefresh: _onRefresh,
+              onLoading: _onLoadMore,
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                 ),
-                itemCount: pokemonListModel.results?.length ?? 0,
+                itemCount: results.length,
                 itemBuilder: (BuildContext context, int index) {
                   return PokemonGridItemWidget(
                     index: index,
-                    item: pokemonListModel.results?[index],
+                    item: results[index],
                   );
                 },
               ),
@@ -131,4 +144,15 @@ class _PokemonListPage extends State<PokemonListPage> {
     _refreshController.requestRefresh();
     callPokemonList(withLoading: false);
   }
+
+  void _onLoadMore() async {
+    if(nextPage == "") return;
+
+    _refreshController.requestLoading();
+    callPokemonListNextPage(
+        nextPage,
+        withLoading: false);
+  }
+
+
 }
