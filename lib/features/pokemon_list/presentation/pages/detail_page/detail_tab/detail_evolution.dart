@@ -33,6 +33,8 @@ class DetailEvolution extends StatelessWidget {
       DescRow(descKey: "Basic", descValue: chain.species?.name ?? ""),
     );
 
+    if(evolvesToCheck.isEmpty) return evolWidget;
+
     int evoCount = 1;
     do {
       PokemonEvolChainModel newChain = evolvesToCheck[0];
