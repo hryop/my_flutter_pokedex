@@ -5,7 +5,9 @@ import 'package:my_flutter_pokedex/core/utils/constant/network_constant.dart';
 import 'package:my_flutter_pokedex/core/utils/injections.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_detail/pokemon_detail_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_detail/type/pokemon_detail_types_model.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/pokemon_evol_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_detail_usecase.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_evol_chain_usecase.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/presentation/bloc/pokemon_detail/pokemon_detail_bloc.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/presentation/pages/detail_page/detail_tab/detail_about.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/presentation/pages/detail_page/detail_tab/detail_base_stats.dart';
@@ -16,9 +18,9 @@ import 'package:my_flutter_pokedex/shared/presentation/cached_image_widget.dart'
 import 'package:my_flutter_pokedex/shared/presentation/reload_widget.dart';
 
 class PokemonDetailPage extends StatefulWidget {
-  final String name;
+  final String pokemonId;
 
-  const PokemonDetailPage({Key? key, required String this.name})
+  const PokemonDetailPage({Key? key, required String this.pokemonId})
     : super(key: key);
 
   @override
@@ -29,9 +31,11 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
     with SingleTickerProviderStateMixin {
   final PokemonDetailBloc _bloc = PokemonDetailBloc(
     pokemonDetailUsecase: sl<PokemonDetailUsecase>(),
+    pokemonEvolChainUsecase: sl<PokemonEvolChainUsecase>(),
   );
 
   PokemonDetailModel pokemonDetailModel = PokemonDetailModel();
+  PokemonEvolModel pokemonEvolModel = PokemonEvolModel();
 
   late TabController _tabController;
   late ScrollController _scrollController;
@@ -49,6 +53,7 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
     _tabController.addListener(_smoothScrollToTop);
 
     callPokemonDetail();
+    callPokemonEvolChain();
     super.initState();
   }
 
@@ -70,6 +75,11 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
               pokemonDetailModel = PokemonDetailModel();
               pokemonDetailModel = state.pokemonDetailModel;
             }
+
+            if (state is SuccessGetPokemonEvolChainState) {
+              pokemonEvolModel = PokemonEvolModel();
+              pokemonEvolModel = state.pokemonEvolModel;
+            }
           },
           builder: (BuildContext context, PokemonDetailState state) {
             if (state is LoadingGetPokemonDetailState) {
@@ -79,6 +89,7 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
                 content: state.errorMsg,
                 onPressed: () {
                   callPokemonDetail();
+                  callPokemonEvolChain();
                 },
               );
             }
@@ -124,7 +135,7 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
               abilities: pokemonDetailModel.abilities ?? [],
             ),
             DetailBaseStats(stats: pokemonDetailModel.stats ?? []),
-            DetailEvolution(),
+            DetailEvolution(evolChain: pokemonEvolModel,),
             DetailMoves(moves: pokemonDetailModel.moves ?? []),
           ],
         ),
@@ -150,9 +161,9 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
         children: [
           Text(getPokemonNumber()),
           Text(
-            widget.name.replaceFirst(
-              widget.name[0],
-              widget.name[0].toUpperCase(),
+            (pokemonDetailModel.name ?? "").replaceFirst(
+              (pokemonDetailModel.name ?? "")[0],
+              (pokemonDetailModel.name ?? "")[0].toUpperCase(),
             ),
             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
           ),
@@ -172,7 +183,13 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
 
   callPokemonDetail({bool withLoading = true}) {
     _bloc.add(
-      OnGettingPokemonDetailEvent(withLoading: withLoading, name: widget.name),
+      OnGettingPokemonDetailEvent(withLoading: withLoading, name: widget.pokemonId),
+    );
+  }
+
+  callPokemonEvolChain({bool withLoading = true}) {
+    _bloc.add(
+      OnGettingPokemonEvolChainEvent(withLoading: withLoading, pokemonId: widget.pokemonId),
     );
   }
 

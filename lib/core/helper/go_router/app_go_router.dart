@@ -6,8 +6,8 @@ import 'package:my_flutter_pokedex/features/pokemon_list/presentation/pages/poke
 final GoRouter appGoRouter = GoRouter(routes: [
   GoRoute(path: home_page,
       builder: (context,state) => const PokemonListPage()),
-  GoRoute(path: detail_page+"/:name",
-      builder: (context,state) => PokemonDetailPage(name: state.pathParameters["name"]!,
+  GoRoute(path: detail_page+"/:pokemonId",
+      builder: (context,state) => PokemonDetailPage(pokemonId: state.pathParameters["pokemonId"]!,
       ))
 
 ]);

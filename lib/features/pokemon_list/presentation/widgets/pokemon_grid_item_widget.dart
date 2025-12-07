@@ -17,7 +17,7 @@ class PokemonGridItemWidget extends StatelessWidget {
       tag: index,
       child: GestureDetector(
         onTap: () {
-          GoRouter.of(context).push(detail_page+"/${item?.name}");
+          GoRouter.of(context).push(detail_page+"/${getPokemonIdFromUrl(item?.url ?? "")}");
         },
         child: Container(
           width: double.infinity,

@@ -4,6 +4,7 @@ import 'package:my_flutter_pokedex/core/network/error/exceptions.dart';
 import 'package:my_flutter_pokedex/core/utils/constant/network_constant.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/data/data_sources/remote/abstract_pokemon_list_api.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_detail/pokemon_detail_model.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/pokemon_evol_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_list/pokemon_list_model.dart';
 
 class PokemonListImplApi extends AbstractPokemonListApi {
@@ -12,7 +13,7 @@ class PokemonListImplApi extends AbstractPokemonListApi {
   PokemonListImplApi(this.dio);
 
   @override
-  Future<PokemonDetailModel> getPokemonDetail(String name) async{
+  Future<PokemonDetailModel> getPokemonDetail(String name) async {
     try {
       final result = (await dio.get(getPokemonDetailPath(name)));
 
@@ -51,6 +52,28 @@ class PokemonListImplApi extends AbstractPokemonListApi {
         throw ServerException("Unknown Error", result.statusCode);
 
       return PokemonListModel.fromJson(result.data);
+    } on DioException catch (e) {
+      if (e.response != null && e.type == DioExceptionType.cancel) {
+        throw CancelTokenException(handleDioError(e), e.response?.statusCode);
+      } else {
+        throw ServerException(handleDioError(e), e.response?.statusCode);
+      }
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(e.toString(), null);
+    }
+  }
+
+  @override
+  Future<PokemonEvolModel> getPokemonEvolChain(String id) async {
+    try {
+      final result = (await dio.get(getPokemonEvolChainPath(id)));
+
+      if (result.data == null)
+        throw ServerException("Unknown Error", result.statusCode);
+
+      return PokemonEvolModel.fromJson(result.data);
     } on DioException catch (e) {
       if (e.response != null && e.type == DioExceptionType.cancel) {
         throw CancelTokenException(handleDioError(e), e.response?.statusCode);

@@ -4,6 +4,7 @@ import 'package:my_flutter_pokedex/features/pokemon_list/data/data_sources/remot
 import 'package:my_flutter_pokedex/features/pokemon_list/data/repositories/pokemon_list_repo_impl.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/repositories/abstract_pokemon_list_repo.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_detail_usecase.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_evol_chain_usecase.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_list_firstpage_usecase.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_list_nextpage_usecase.dart';
 
@@ -13,4 +14,5 @@ initPokemonListInjections(){
   sl.registerSingleton<PokemonListFirstPageUsecase>(PokemonListFirstPageUsecase(sl()));
   sl.registerSingleton<PokemonListNextPageUsecase>(PokemonListNextPageUsecase(sl()));
   sl.registerSingleton<PokemonDetailUsecase>(PokemonDetailUsecase(sl()));
+  sl.registerSingleton<PokemonEvolChainUsecase>(PokemonEvolChainUsecase(sl()));
 }

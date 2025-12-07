@@ -17,3 +17,15 @@ class SuccessGetPokemonDetailState extends PokemonDetailState {
   final PokemonDetailModel pokemonDetailModel;
   SuccessGetPokemonDetailState(this.pokemonDetailModel);
 }
+
+class LoadingGetPokemonEvolChainState extends PokemonDetailState{}
+
+class ErrorGetPokemonEvolChainState extends PokemonDetailState{
+  final String errorMsg;
+  ErrorGetPokemonEvolChainState(this.errorMsg);
+}
+
+class SuccessGetPokemonEvolChainState extends PokemonDetailState {
+  final PokemonEvolModel pokemonEvolModel;
+  SuccessGetPokemonEvolChainState(this.pokemonEvolModel);
+}

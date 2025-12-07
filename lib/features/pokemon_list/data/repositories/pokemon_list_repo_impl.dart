@@ -3,6 +3,8 @@ import 'package:my_flutter_pokedex/core/network/error/exceptions.dart';
 import 'package:my_flutter_pokedex/core/network/error/failures.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/data/data_sources/remote/pokemon_list_impl_api.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_detail/pokemon_detail_model.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/chain/pokemon_evol_chain_model.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/pokemon_evol_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_list/pokemon_list_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/repositories/abstract_pokemon_list_repo.dart';
 
@@ -16,6 +18,18 @@ class PokemonListRepoImpl extends AbstractPokemonListRepo{
   Future<Either<Failure, PokemonDetailModel>> getPokemonDetail(String name) async{
     try {
       final reponse = await pokemonListApi.getPokemonDetail(name);
+      return Right(reponse);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on CancelTokenException catch (e) {
+      return Left(CancelTokenFailure(e.message, e.statusCode));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PokemonEvolModel>> getPokemonEvolChain(String id) async{
+    try {
+      final reponse = await pokemonListApi.getPokemonEvolChain(id);
       return Right(reponse);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
