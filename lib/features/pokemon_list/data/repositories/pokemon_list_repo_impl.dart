@@ -6,6 +6,7 @@ import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_d
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/chain/pokemon_evol_chain_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/pokemon_evol_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_list/pokemon_list_model.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_species/pokemon_species_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/repositories/abstract_pokemon_list_repo.dart';
 
 class PokemonListRepoImpl extends AbstractPokemonListRepo{
@@ -27,9 +28,9 @@ class PokemonListRepoImpl extends AbstractPokemonListRepo{
   }
 
   @override
-  Future<Either<Failure, PokemonEvolModel>> getPokemonEvolChain(String id) async{
+  Future<Either<Failure, PokemonEvolModel>> getPokemonEvolChain(String evolChainUrl) async{
     try {
-      final reponse = await pokemonListApi.getPokemonEvolChain(id);
+      final reponse = await pokemonListApi.getPokemonEvolChain(evolChainUrl);
       return Right(reponse);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
@@ -54,6 +55,18 @@ class PokemonListRepoImpl extends AbstractPokemonListRepo{
   Future<Either<Failure, PokemonListModel>> getPokemonListNextPage(String nextPageUrl) async{
     try {
       final reponse = await pokemonListApi.getPokemonListNextPage(nextPageUrl);
+      return Right(reponse);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on CancelTokenException catch (e) {
+      return Left(CancelTokenFailure(e.message, e.statusCode));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PokemonSpeciesModel>> getPokemonSpecies(String pokemonId) async{
+    try {
+      final reponse = await pokemonListApi.getPokemonSpecies(pokemonId);
       return Right(reponse);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

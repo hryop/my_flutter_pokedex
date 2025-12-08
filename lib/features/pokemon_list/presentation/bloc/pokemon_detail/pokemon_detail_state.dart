@@ -29,3 +29,15 @@ class SuccessGetPokemonEvolChainState extends PokemonDetailState {
   final PokemonEvolModel pokemonEvolModel;
   SuccessGetPokemonEvolChainState(this.pokemonEvolModel);
 }
+
+class LoadingGetPokemonSpeciesState extends PokemonDetailState{}
+
+class ErrorGetPokemonSpeciesState extends PokemonDetailState{
+  final String errorMsg;
+  ErrorGetPokemonSpeciesState(this.errorMsg);
+}
+
+class SuccessGetPokemonSpeciesState extends PokemonDetailState {
+  final PokemonSpeciesModel pokemonSpeciesModel;
+  SuccessGetPokemonSpeciesState(this.pokemonSpeciesModel);
+}

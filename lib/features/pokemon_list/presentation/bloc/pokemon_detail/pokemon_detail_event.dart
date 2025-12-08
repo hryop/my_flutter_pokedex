@@ -12,6 +12,12 @@ class OnGettingPokemonDetailEvent extends PokemonDetailEvent{
 
 class OnGettingPokemonEvolChainEvent extends PokemonDetailEvent{
   final bool withLoading;
+  final String evolChainUrl;
+  OnGettingPokemonEvolChainEvent({this.withLoading = true, required this.evolChainUrl});
+}
+
+class OnGettingPokemonSpeciesEvent extends PokemonDetailEvent{
+  final bool withLoading;
   final String pokemonId;
-  OnGettingPokemonEvolChainEvent({this.withLoading = true, required this.pokemonId});
+  OnGettingPokemonSpeciesEvent({this.withLoading = true, required this.pokemonId});
 }

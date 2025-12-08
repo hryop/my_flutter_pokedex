@@ -6,8 +6,10 @@ import 'package:my_flutter_pokedex/core/utils/injections.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_detail/pokemon_detail_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_detail/type/pokemon_detail_types_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/pokemon_evol_model.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_species/pokemon_species_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_detail_usecase.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_evol_chain_usecase.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/usecase/pokemon_species_usecase.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/presentation/bloc/pokemon_detail/pokemon_detail_bloc.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/presentation/pages/detail_page/detail_tab/detail_about.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/presentation/pages/detail_page/detail_tab/detail_base_stats.dart';
@@ -32,10 +34,12 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
   final PokemonDetailBloc _bloc = PokemonDetailBloc(
     pokemonDetailUsecase: sl<PokemonDetailUsecase>(),
     pokemonEvolChainUsecase: sl<PokemonEvolChainUsecase>(),
+    pokemonSpeciesUsecase: sl<PokemonSpeciesUsecase>(),
   );
 
   PokemonDetailModel pokemonDetailModel = PokemonDetailModel();
   PokemonEvolModel pokemonEvolModel = PokemonEvolModel();
+  PokemonSpeciesModel pokemonSpeciesModel = PokemonSpeciesModel();
 
   late TabController _tabController;
   late ScrollController _scrollController;
@@ -47,13 +51,10 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
     _scrollController.addListener(_scrollListener);
 
     _tabController = TabController(length: 4, vsync: this);
-    // _tabController.addListener(() {
-    //   setState(() {});
-    // });
     _tabController.addListener(_smoothScrollToTop);
 
     callPokemonDetail();
-    callPokemonEvolChain();
+    callPokemonSpecies();
     super.initState();
   }
 
@@ -76,6 +77,13 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
               pokemonDetailModel = state.pokemonDetailModel;
             }
 
+            if (state is SuccessGetPokemonSpeciesState) {
+              pokemonSpeciesModel = PokemonSpeciesModel();
+              pokemonSpeciesModel = state.pokemonSpeciesModel;
+
+              callPokemonEvolChain(pokemonSpeciesModel.evolution_chain?.url ?? "");
+            }
+
             if (state is SuccessGetPokemonEvolChainState) {
               pokemonEvolModel = PokemonEvolModel();
               pokemonEvolModel = state.pokemonEvolModel;
@@ -89,7 +97,7 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
                 content: state.errorMsg,
                 onPressed: () {
                   callPokemonDetail();
-                  callPokemonEvolChain();
+                  callPokemonSpecies();
                 },
               );
             }
@@ -187,9 +195,17 @@ class _PokemonDetailPage extends State<PokemonDetailPage>
     );
   }
 
-  callPokemonEvolChain({bool withLoading = true}) {
+  callPokemonEvolChain(String evolChainUrl, {bool withLoading = true}) {
+    if(evolChainUrl.isEmpty) return;
+
     _bloc.add(
-      OnGettingPokemonEvolChainEvent(withLoading: withLoading, pokemonId: widget.pokemonId),
+      OnGettingPokemonEvolChainEvent(withLoading: withLoading, evolChainUrl: evolChainUrl),
+    );
+  }
+
+  callPokemonSpecies({bool withLoading = true}) {
+    _bloc.add(
+      OnGettingPokemonSpeciesEvent(withLoading: withLoading, pokemonId: widget.pokemonId),
     );
   }
 

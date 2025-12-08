@@ -6,6 +6,7 @@ import 'package:my_flutter_pokedex/features/pokemon_list/data/data_sources/remot
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_detail/pokemon_detail_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_evolution_chain/pokemon_evol_model.dart';
 import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_list/pokemon_list_model.dart';
+import 'package:my_flutter_pokedex/features/pokemon_list/domain/models/pokemon_species/pokemon_species_model.dart';
 
 class PokemonListImplApi extends AbstractPokemonListApi {
   final Dio dio;
@@ -66,14 +67,36 @@ class PokemonListImplApi extends AbstractPokemonListApi {
   }
 
   @override
-  Future<PokemonEvolModel> getPokemonEvolChain(String id) async {
+  Future<PokemonEvolModel> getPokemonEvolChain(String evolChainUrl) async {
     try {
-      final result = (await dio.get(getPokemonEvolChainPath(id)));
+      final result = (await dio.get(evolChainUrl));
 
       if (result.data == null)
         throw ServerException("Unknown Error", result.statusCode);
 
       return PokemonEvolModel.fromJson(result.data);
+    } on DioException catch (e) {
+      if (e.response != null && e.type == DioExceptionType.cancel) {
+        throw CancelTokenException(handleDioError(e), e.response?.statusCode);
+      } else {
+        throw ServerException(handleDioError(e), e.response?.statusCode);
+      }
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(e.toString(), null);
+    }
+  }
+
+  @override
+  Future<PokemonSpeciesModel> getPokemonSpecies(String pokemonId) async{
+    try {
+      final result = (await dio.get(getPokemonSpeciesPath(pokemonId)));
+
+      if (result.data == null)
+        throw ServerException("Unknown Error", result.statusCode);
+
+      return PokemonSpeciesModel.fromJson(result.data);
     } on DioException catch (e) {
       if (e.response != null && e.type == DioExceptionType.cancel) {
         throw CancelTokenException(handleDioError(e), e.response?.statusCode);

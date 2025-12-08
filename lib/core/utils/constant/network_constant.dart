@@ -22,3 +22,7 @@ String getPokemonArtworkPath(String pokemonId) {
 String getPokemonEvolChainPath(String pokemonId){
   return "${BASE_URL}evolution-chain/$pokemonId";
 }
+
+String getPokemonSpeciesPath(String pokemonId){
+  return "${BASE_URL}pokemon-species/$pokemonId";
+}
