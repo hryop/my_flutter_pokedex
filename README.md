@@ -11,8 +11,9 @@ Click [here](https://drive.google.com/file/d/1-aaWsYcQsZCIxtXA_iE9sKcUnpkU9x5Y/v
 2. See the details about selected pokemon
 
 ## Build App requirements
-- Using FLutter 3.38.1
-- Using Dart 3.10.0
+- Flutter 3.38.1
+- Dart 3.10.0
+- JDK 21
 
 ## Code Design & Structure
 This project is using BLoC state management and clean architecture pattern
